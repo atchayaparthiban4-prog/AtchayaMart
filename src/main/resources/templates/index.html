@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Welcome')}"></head>
+<body>
+
+<header th:replace="~{fragments :: navbar(${user})}"></header>
+
+<section class="hero">
+    <div class="container">
+        <h1>Welcome to Atchaya<span>Mart</span></h1>
+        <p>Your one-stop online shopping destination. Buy products, sell products, and manage orders — all in one place.</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" th:href="@{/register}">Get Started</a>
+            <a class="btn btn-outline" th:href="@{/login}">Sign In</a>
+        </div>
+    </div>
+</section>
+
+<section class="container features">
+    <div class="card">
+        <h3>Buyers</h3>
+        <p>Shop, search and filter products, manage your cart and place orders.</p>
+    </div>
+    <div class="card">
+        <h3>Sellers</h3>
+        <p>Add, edit and delete products, and track the orders you receive.</p>
+    </div>
+    <div class="card">
+        <h3>Admin</h3>
+        <p>Manage users, review orders, and remove inappropriate products.</p>
+    </div>
+</section>
+
+</body>
+</html>

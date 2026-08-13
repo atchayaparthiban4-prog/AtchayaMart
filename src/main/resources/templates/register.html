@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Register')}"></head>
+<body>
+
+<header th:replace="~{fragments :: navbar(${user})}"></header>
+
+<main class="container auth-wrap">
+    <form class="auth-card" th:action="@{/register}" th:object="${registerRequest}" method="post">
+
+        <h2>Create Account</h2>
+
+        <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+        <label for="name">Full Name</label>
+        <input id="name" type="text" th:field="*{name}" placeholder="Your name" required>
+        <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+        <label for="email">Email</label>
+        <input id="email" type="email" th:field="*{email}" placeholder="you@example.com" required>
+        <p class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+        <label for="password">Password</label>
+        <input id="password" type="password" th:field="*{password}" placeholder="At least 6 characters" required>
+        <p class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+
+        <label for="role">I want to</label>
+        <select id="role" th:field="*{role}" required>
+            <option th:each="r : ${T(com.atchayamart.model.Role).values()}"
+                    th:if="${r.name() != 'ADMIN'}"
+                    th:value="${r.name()}" th:text="${r.name()}">BUYER</option>
+        </select>
+
+        <button class="btn btn-primary btn-block" type="submit">Register</button>
+
+        <p class="auth-alt">Already have an account? <a th:href="@{/login}">Login here</a></p>
+    </form>
+</main>
+
+</body>
+</html>

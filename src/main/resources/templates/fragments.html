@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | AtchayaMart'">AtchayaMart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header th:fragment="navbar(user)">
+    <nav class="navbar">
+        <div class="container nav-inner">
+            <a class="brand" th:href="@{/}">Atchaya<span>Mart</span></a>
+            <div class="nav-links">
+                <a th:href="@{/}">Home</a>
+                <th:block th:if="${user == null}">
+                    <a th:href="@{/login}">Login</a>
+                    <a class="btn btn-primary btn-sm" th:href="@{/register}">Register</a>
+                </th:block>
+                <th:block th:if="${user != null}">
+                    <span class="nav-user" th:text="'Hi, ' + ${user.name}">Hi</span>
+                    <a th:href="@{/logout}">Logout</a>
+                </th:block>
+            </div>
+        </div>
+    </nav>
+</header>
+
+</body>
+</html>

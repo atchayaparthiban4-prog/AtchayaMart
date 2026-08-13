@@ -1,0 +1,6 @@
+target/
+data/
+app.log
+app.err
+*.mv.db
+*.lock.db

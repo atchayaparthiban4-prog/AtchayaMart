@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Dashboard')}"></head>
+<body>
+
+<header th:replace="~{fragments :: navbar(${user})}"></header>
+
+<main class="container">
+    <section class="welcome">
+        <h1>Welcome back, <span th:text="${user.name}">User</span>!</h1>
+        <p th:text="'You are logged in as a ' + ${user.role}">Role</p>
+    </section>
+
+    <section class="features">
+        <div class="card">
+            <h3>Browse Products</h3>
+            <p>Explore the catalog, search and filter by category.</p>
+        </div>
+        <div class="card" th:if="${user.role.name() == 'SELLER'}">
+            <h3>Seller Tools</h3>
+            <p>Add, edit and delete your products. Track received orders.</p>
+        </div>
+        <div class="card" th:if="${user.role.name() == 'ADMIN'}">
+            <h3>Admin Tools</h3>
+            <p>View all users, manage orders, and remove inappropriate products.</p>
+        </div>
+    </section>
+
+    <div class="upcoming">
+        <h3>Coming in the next weeks</h3>
+        <p>Product catalog, shopping cart, checkout, order history, admin panel and reviews.</p>
+    </div>
+</main>
+
+</body>
+</html>
