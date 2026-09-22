@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('Checkout')}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'cart')}"></header>
+
+<main class="container">
+    <div class="section-head">
+        <h2>Checkout</h2>
+        <span class="muted">Fill in your delivery details and place the order.</span>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <div class="checkout-layout">
+        <form class="card form-card" th:action="@{/checkout}" th:object="${checkoutRequest}" method="post">
+            <h3>Delivery Details</h3>
+
+            <label for="name">Customer Name</label>
+            <input id="name" type="text" th:field="*{name}" placeholder="Full name" required>
+            <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+            <label for="mobile">Mobile Number</label>
+            <input id="mobile" type="tel" th:field="*{mobile}" placeholder="10-digit mobile number" required>
+            <p class="field-error" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}"></p>
+
+            <label for="address">Delivery Address</label>
+            <textarea id="address" th:field="*{address}" rows="3" placeholder="House no, street, area, city, pincode" required></textarea>
+            <p class="field-error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
+
+            <button class="btn btn-mart btn-block" type="submit">Place Order 📦</button>
+        </form>
+
+        <aside class="summary-card">
+            <h3>Your Order</h3>
+            <div class="cart-row mini" th:each="e : ${entries}">
+                <span th:text="${e.product.name} + ' × ' + ${e.quantity}">Tomato × 2</span>
+                <span th:text="'₹' + ${#numbers.formatDecimal(e.lineTotal, 1, 2)}">₹80.00</span>
+            </div>
+            <div class="summary-row"><span>Subtotal</span><span th:text="'₹' + ${#numbers.formatDecimal(subtotal, 1, 2)}">₹0.00</span></div>
+            <div class="summary-row discount" th:if="${discount.signum() > 0}"><span>Discount</span><span th:text="'- ₹' + ${#numbers.formatDecimal(discount, 1, 2)}">-₹0.00</span></div>
+            <div class="summary-row total"><span>Total</span><span th:text="'₹' + ${#numbers.formatDecimal(total, 1, 2)}">₹0.00</span></div>
+        </aside>
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('Admin')}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'admin')}"></header>
+
+<main class="container">
+    <div class="section-head">
+        <h2>Admin Panel</h2>
+        <span class="muted">Store overview</span>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3 th:text="${productCount}">91</h3>
+            <span>Total Products</span>
+        </div>
+        <div class="stat-card">
+            <h3 th:text="${orderCount}">12</h3>
+            <span>Total Orders</span>
+        </div>
+        <div class="stat-card warn">
+            <h3 th:text="${lowStockCount}">4</h3>
+            <span>Low Stock Items</span>
+        </div>
+        <div class="stat-card danger">
+            <h3 th:text="${outOfStockCount}">2</h3>
+            <span>Out of Stock</span>
+        </div>
+    </div>
+
+    <div class="admin-links">
+        <a class="card admin-card" th:href="@{/admin/stock}">
+            <span class="admin-icon">📦</span>
+            <div><h4>Stock Management</h4><p>View, add or adjust product stock.</p></div>
+        </a>
+        <a class="card admin-card" th:href="@{/admin/product/new}">
+            <span class="admin-icon">➕</span>
+            <div><h4>Add Product</h4><p>Add a new product to the catalog.</p></div>
+        </a>
+        <a class="card admin-card" th:href="@{/admin/orders}">
+            <span class="admin-icon">🧾</span>
+            <div><h4>Manage Orders</h4><p>Track and update customer orders.</p></div>
+        </a>
+    </div>
+</main>
+
+</body>
+</html>

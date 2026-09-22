@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('Product')}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'admin')}"></header>
+
+<main class="container narrow">
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <div class="section-head">
+        <h2 th:text="${editing} ? 'Edit Product' : 'Add Product'">Add Product</h2>
+    </div>
+
+    <form class="card form-card"
+          th:action="${editing} ? '/admin/products/' + ${product.id} + '/edit' : '/admin/products'"
+          th:object="${productRequest}" method="post">
+
+        <label for="name">Product Name</label>
+        <input id="name" type="text" th:field="*{name}" placeholder="e.g. Basmati Rice" required>
+
+        <label for="category">Category</label>
+        <select id="category" th:field="*{category}">
+            <option th:each="c : ${categories}"
+                    th:value="${c.name()}" th:text="${c.label}">Category</option>
+        </select>
+
+        <div class="form-row">
+            <div>
+                <label for="price">Price (₹)</label>
+                <input id="price" type="number" th:field="*{price}" step="0.01" min="0" placeholder="45.00" required>
+            </div>
+            <div>
+                <label for="unit">Unit</label>
+                <select id="unit" th:field="*{unit}">
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="L">L</option>
+                    <option value="100g">100g</option>
+                    <option value="pack">pack</option>
+                    <option value="piece">piece</option>
+                    <option value="dozen">dozen</option>
+                    <option value="bunch">bunch</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div>
+                <label for="stock">Stock</label>
+                <input id="stock" type="number" th:field="*{stock}" step="1" min="0" placeholder="50" required>
+            </div>
+            <div>
+                <label for="minStock">Min Stock (low-stock alert)</label>
+                <input id="minStock" type="number" th:field="*{minStock}" step="1" min="0" placeholder="10">
+            </div>
+            <div>
+                <label for="discountPercent">Discount %</label>
+                <input id="discountPercent" type="number" th:field="*{discountPercent}" step="1" min="0" max="90" placeholder="0">
+            </div>
+        </div>
+
+        <label for="imageUrl">Image URL <span class="muted">(optional)</span></label>
+        <input id="imageUrl" type="url" th:field="*{imageUrl}" placeholder="https://...">
+
+        <label for="description">Description</label>
+        <textarea id="description" th:field="*{description}" rows="3" placeholder="Describe the product"></textarea>
+
+        <button class="btn btn-mart btn-block" type="submit" th:text="${editing} ? 'Save Changes' : 'Add Product'">Save</button>
+        <a class="btn btn-outline btn-block" th:href="@{/admin/stock}">Cancel</a>
+    </form>
+</main>
+
+</body>
+</html>

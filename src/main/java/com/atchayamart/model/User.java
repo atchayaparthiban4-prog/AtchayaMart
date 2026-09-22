@@ -31,6 +31,12 @@ public class User {
     @Column(nullable = false, length = 10)
     private Role role;
 
+    @Column(length = 500)
+    private String address;
+
+    @Column(length = 15)
+    private String mobile;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -81,6 +87,18 @@ public class User {
         return role;
     }
 
+    public boolean isSeller() {
+        return role == Role.SELLER;
+    }
+
+    public boolean isAdmin() {
+        return role == Role.ADMIN;
+    }
+
+    public boolean isSellerOrAdmin() {
+        return isSeller() || isAdmin();
+    }
+
     public void setRole(Role role) {
         this.role = role;
     }
@@ -91,5 +109,21 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }

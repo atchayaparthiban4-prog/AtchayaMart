@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('Seller')}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'products')}"></header>
+
+<main class="container">
+    <div class="section-head">
+        <h2>My Products</h2>
+        <div class="head-actions">
+            <a class="btn btn-mart" th:href="@{/seller/products/new}">➕ Add Product</a>
+        </div>
+    </div>
+
+    <div class="alert alert-success" th:if="${param.created}">Product added successfully.</div>
+    <div class="alert alert-success" th:if="${param.updated}">Product updated successfully.</div>
+    <div class="alert alert-success" th:if="${param.deleted}">Product deleted.</div>
+    <div class="alert alert-error" th:if="${param.forbidden}">You can only manage your own products.</div>
+
+    <div class="empty-state" th:if="${products.isEmpty()}">
+        <h3>No products yet</h3>
+        <p>Add your first product to start selling.</p>
+        <a class="btn btn-mart" th:href="@{/seller/products/new}">➕ Add Product</a>
+    </div>
+
+    <table class="table summary stock-table" th:if="${!products.isEmpty()}">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Unit</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="p : ${products}">
+                <td class="strong">
+                    <a th:href="@{/products/{id}(id=${p.id})}" th:text="${p.name}">Product</a>
+                </td>
+                <td th:text="${p.category.label}">Category</td>
+                <td th:text="'₹' + ${#numbers.formatDecimal(p.discountedPrice, 1, 2)}">₹40.00</td>
+                <td th:text="${p.stock}">10</td>
+                <td th:text="${p.unit}">kg</td>
+                <td>
+                    <span class="status-badge"
+                          th:classappend="${p.isOutOfStock()} ? 'out' : (${p.isLowStock()} ? 'low' : 'ok')"
+                          th:text="${p.isOutOfStock()} ? 'Out of Stock' : (${p.isLowStock()} ? 'Low Stock' : 'In Stock')">In Stock</span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <a class="btn btn-sm btn-outline" th:href="@{/seller/products/{id}/edit(id=${p.id})}">Edit</a>
+                        <form th:action="@{/seller/products/{id}/delete(id=${p.id})}" method="post"
+                              onsubmit="return confirm('Delete this product?');">
+                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+</body>
+</html>

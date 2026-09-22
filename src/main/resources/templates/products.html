@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('Products')}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'products')}"></header>
+
+<section id="categories" class="container categories-section">
+    <div class="section-head">
+        <h2>All Groceries</h2>
+        <span class="muted" th:text="${products.size()} + ' products'">91 products</span>
+    </div>
+
+    <div class="filters">
+        <form class="search-form" th:action="@{/products}" method="get">
+            <input type="text" name="q" th:value="${q}" placeholder="Search for rice, oil, dal..." data-submit>
+            <button class="btn btn-mart btn-sm" type="submit">Search</button>
+        </form>
+        <div class="category-pills">
+            <a th:classappend="${selectedCategory == null or selectedCategory == ''} ? 'pill active' : 'pill'"
+               th:href="@{/products}">All</a>
+            <a th:each="c : ${categories}"
+               th:classappend="${selectedCategory == c.name()} ? 'pill active' : 'pill'"
+               th:href="@{/products(category=${c.name()}, q=${q})}"
+               th:text="${c.label}">Category</a>
+        </div>
+    </div>
+
+    <div class="products-grid" th:if="${!products.isEmpty()}">
+        <th:block th:each="p : ${products}">
+            <article th:replace="~{mart-fragments :: productCard(${p}, '/products')}"></article>
+        </th:block>
+    </div>
+
+    <div class="empty-state" th:if="${products.isEmpty()}">
+        <h3>No products found</h3>
+        <p>Try a different search term or category.</p>
+    </div>
+</section>
+
+<script th:replace="~{mart-fragments :: martScripts}"></script>
+</body>
+</html>

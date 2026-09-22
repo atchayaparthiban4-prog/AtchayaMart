@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('Order #' + ${order.id})}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'orders')}"></header>
+
+<main class="container">
+    <div class="alert alert-success confirmation" th:if="${param.placed}">
+        ✅ <strong>Order placed successfully!</strong> Your groceries are on the way. Thank you for shopping at AtchayaMart.
+    </div>
+
+    <div class="order-head">
+        <div>
+            <h1>Order <span th:text="'#' + ${order.id}">#12</span></h1>
+            <p class="muted" th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, hh:mm a')}">12 Jan 2026</p>
+        </div>
+        <span class="status-pill" th:text="${order.status.label}">Pending</span>
+    </div>
+
+    <div class="card summary-card details">
+        <h3>Delivery Details</h3>
+        <p><strong th:text="${order.customerName}">Name</strong><br><span th:text="${order.mobile}">Mobile</span></p>
+        <p th:text="${order.address}">Address</p>
+    </div>
+
+    <div class="card">
+        <table class="table summary">
+            <thead>
+                <tr><th>Product</th><th>Unit Price</th><th>Quantity</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="it : ${order.items}">
+                    <td th:text="${it.productName}">Tomato</td>
+                    <td th:text="'₹' + ${#numbers.formatDecimal(it.unitPrice, 1, 2)} + ' / ' + ${it.unit}">₹40 / kg</td>
+                    <td th:text="${it.quantity}">2</td>
+                    <td th:text="'₹' + ${#numbers.formatDecimal(it.totalPrice, 1, 2)}">₹80.00</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="summary-row total"><span>Order Total</span><span th:text="'₹' + ${#numbers.formatDecimal(order.total, 1, 2)}">₹405.00</span></div>
+    </div>
+
+    <p class="back-link"><a th:href="@{/orders}">&larr; Back to My Orders</a></p>
+</main>
+
+</body>
+</html>

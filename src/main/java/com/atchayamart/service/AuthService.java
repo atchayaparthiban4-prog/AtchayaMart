@@ -1,5 +1,6 @@
 package com.atchayamart.service;
 
+import com.atchayamart.dto.ProfileRequest;
 import com.atchayamart.dto.RegisterRequest;
 import com.atchayamart.exception.AuthException;
 import com.atchayamart.model.Role;
@@ -42,5 +43,14 @@ public class AuthService {
             throw new AuthException("Invalid email or password");
         }
         return user;
+    }
+
+    public User updateProfile(User user, ProfileRequest request) {
+        user.setName(request.getName().trim());
+        user.setMobile(request.getMobile() == null || request.getMobile().isBlank()
+                ? null : request.getMobile().trim());
+        user.setAddress(request.getAddress() == null || request.getAddress().isBlank()
+                ? null : request.getAddress().trim());
+        return userRepository.save(user);
     }
 }

@@ -1,36 +1,108 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head('Dashboard')}"></head>
+<head th:replace="~{mart-fragments :: martHead('Home')}"></head>
 <body>
 
-<header th:replace="~{fragments :: navbar(${user})}"></header>
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'home')}"></header>
 
-<main class="container">
-    <section class="welcome">
-        <h1>Welcome back, <span th:text="${user.name}">User</span>!</h1>
-        <p th:text="'You are logged in as a ' + ${user.role}">Role</p>
-    </section>
+<div class="alert alert-error alert-fixed" th:if="${param.error == 'forbidden'}">
+    You don't have permission to access that section.
+</div>
 
-    <section class="features">
-        <div class="card">
-            <h3>Browse Products</h3>
-            <p>Explore the catalog, search and filter by category.</p>
+<section class="store-banner">
+    <div class="container banner-inner">
+        <div>
+            <h1>Groceries delivered <span>fresh</span>, every day.</h1>
+            <p>Shop fruits, vegetables, staples and much more from <strong>AtchayaMart</strong> — your local supermarket, online.</p>
         </div>
-        <div class="card" th:if="${user.role.name() == 'SELLER'}">
-            <h3>Seller Tools</h3>
-            <p>Add, edit and delete your products. Track received orders.</p>
+        <div class="store-banner-badges">
+            <span>◉ Fresh Produce</span>
+            <span>◉ Best Prices</span>
+            <span>◉ Home Delivery</span>
         </div>
-        <div class="card" th:if="${user.role.name() == 'ADMIN'}">
-            <h3>Admin Tools</h3>
-            <p>View all users, manage orders, and remove inappropriate products.</p>
-        </div>
-    </section>
-
-    <div class="upcoming">
-        <h3>Coming in the next weeks</h3>
-        <p>Product catalog, shopping cart, checkout, order history, admin panel and reviews.</p>
     </div>
-</main>
+</section>
 
+<section id="offers" class="container offers-section">
+    <div class="section-head">
+        <h2>🔥 Today's Offers</h2>
+        <a class="text-link" th:href="@{/products}">View all products →</a>
+    </div>
+    <div class="offer-strip">
+        <span>10% OFF on Rice &amp; Grains</span>
+        <span>15% OFF on Cooking Oils</span>
+        <span>20% OFF on selected Snacks</span>
+        <span>Buy 2 Get 1 on Biscuits</span>
+    </div>
+    <div class="products-grid" th:if="${!offers.isEmpty()}">
+        <th:block th:each="p : ${offers}">
+            <article th:if="${pStat.count <= 8}" th:replace="~{mart-fragments :: productCard(${p}, '/dashboard')}"></article>
+        </th:block>
+    </div>
+</section>
+
+<section class="container alerts-section" th:if="${!lowStockProducts.isEmpty() or !outOfStockProducts.isEmpty()}">
+    <div class="alert alert-warning">
+        <h3>⚠️ Low Stock Alert</h3>
+        <ul>
+            <li th:each="p : ${lowStockProducts}">
+                <span th:text="'❕ ' + ${p.name}">Tomato</span>
+                stock is running low — only
+                <span th:text="${p.stock} + ' ' + ${p.unit}">5 kg</span> left.
+            </li>
+            <li th:each="p : ${outOfStockProducts}">
+                <span th:text="'❌ ' + ${p.name}">Sugar</span>
+                is currently unavailable.
+            </li>
+        </ul>
+    </div>
+</section>
+
+<section id="categories" class="container categories-section">
+    <div class="section-head">
+        <h2>Shop by Category</h2>
+    </div>
+    <div class="category-grid">
+        <a th:each="c : ${categories}" class="category-tile" th:href="@{/products(category=${c.name()})}">
+            <span class="category-icon" th:text="${c.icon}">🍎</span>
+            <span th:text="${c.label}">Fruits</span>
+        </a>
+    </div>
+</section>
+
+<section class="container catalog-section">
+    <div class="section-head">
+        <h2>Groceries</h2>
+        <span class="muted" th:text="${products.size()} + ' products'">91 products</span>
+    </div>
+
+    <div class="filters">
+        <form class="search-form" th:action="@{/dashboard}" method="get">
+            <input type="text" name="q" th:value="${q}" placeholder="Search for rice, oil, dal..." data-submit>
+            <button class="btn btn-mart btn-sm" type="submit">Search</button>
+        </form>
+        <div class="category-pills">
+            <a th:classappend="${selectedCategory == null or selectedCategory == ''} ? 'pill active' : 'pill'"
+               th:href="@{/dashboard}">All</a>
+            <a th:each="c : ${categories}"
+               th:classappend="${selectedCategory == c.name()} ? 'pill active' : 'pill'"
+               th:href="@{/dashboard(category=${c.name()}, q=${q})}"
+               th:text="${c.label}">Category</a>
+        </div>
+    </div>
+
+    <div class="products-grid" th:if="${!products.isEmpty()}">
+        <th:block th:each="p : ${products}">
+            <article th:replace="~{mart-fragments :: productCard(${p}, '/dashboard')}"></article>
+        </th:block>
+    </div>
+
+    <div class="empty-state" th:if="${products.isEmpty()}">
+        <h3>No products found</h3>
+        <p>Try a different search term or category.</p>
+    </div>
+</section>
+
+<script th:replace="~{mart-fragments :: martScripts}"></script>
 </body>
 </html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<head th:fragment="martHead(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | AtchayaMart'">AtchayaMart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<header th:fragment="martNavbar(user, cartCount, active)">
+    <nav class="navbar mart-navbar">
+        <div class="container nav-inner">
+            <a class="brand mart-brand" th:href="@{/dashboard}">
+                <span class="brand-icon">🛒</span> Atchaya<span class="brand-accent">Mart</span>
+            </a>
+
+            <div class="mart-nav-links">
+                <a th:classappend="${active == 'home'} ? 'active' : ''" th:href="@{/dashboard}">Home</a>
+                <a th:classappend="${active == 'categories'} ? 'active' : ''" th:href="@{/dashboard#categories}">Categories</a>
+                <a th:classappend="${active == 'products'} ? 'active' : ''" th:href="@{/products}">Products</a>
+                <a th:classappend="${active == 'offers'} ? 'active' : ''" th:href="@{/dashboard#offers}">Offers</a>
+                <a th:classappend="${active == 'cart'} ? 'active' : ''" th:href="@{/cart}">Cart
+                    <span class="cart-badge" th:if="${cartCount > 0}" th:text="${cartCount}">0</span>
+                </a>
+                <a th:classappend="${active == 'orders'} ? 'active' : ''" th:href="@{/orders}">Orders</a>
+                <a th:classappend="${active == 'profile'} ? 'active' : ''" th:href="@{/profile}">Profile</a>
+                <th:block th:if="${user != null and user.isAdmin()}">
+                    <a th:classappend="${active == 'admin'} ? 'active' : ''" th:href="@{/admin}">Admin</a>
+                </th:block>
+            </div>
+
+            <div class="mart-nav-right">
+                <form class="nav-search" th:action="@{/dashboard}" method="get">
+                    <input type="text" name="q" placeholder="Search groceries..." data-submit
+                           th:value="${q != null ? q : ''}">
+                    <button type="submit" aria-label="Search">🔍</button>
+                </form>
+                <div class="mart-profile">
+                    <a th:href="@{/profile}">
+                        <span class="avatar" th:text="${user != null ? user.name.substring(0, 1) : 'G'}">G</span>
+                        <span class="profile-name" th:if="${user != null}" th:text="${user.name}">User</span>
+                    </a>
+                    <a th:href="@{/logout}" title="Logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<article class="product-card" th:fragment="productCard(p, returnTo)">
+    <a class="product-thumb" th:href="@{/products/{id}(id=${p.id})}">
+        <div th:if="${p.hasImage()}" th:style="'background-image: url(' + ${p.imageUrl} + ')'"></div>
+        <div class="placeholder" th:unless="${p.hasImage()}" th:text="${p.category.icon}">🍎</div>
+    </a>
+    <div class="product-body">
+        <div class="product-top">
+            <span class="badge" th:text="${p.category.label}">Category</span>
+            <span class="discount-tag" th:if="${p.isDiscounted()}" th:text="${p.discountPercent} + '% OFF'">10% OFF</span>
+        </div>
+        <a class="product-title" th:href="@{/products/{id}(id=${p.id})}" th:text="${p.name}">Product</a>
+        <div class="product-stock">
+            <span class="stock-text" th:text="'Stock: ' + ${p.stock} + ' ' + ${p.unit}">Stock: 10 kg</span>
+            <span class="status-badge"
+                  th:classappend="${p.isOutOfStock()} ? 'out' : (${p.isLowStock()} ? 'low' : 'ok')"
+                  th:text="${p.isOutOfStock()} ? 'Out of Stock' : (${p.isLowStock()} ? 'Low Stock' : 'In Stock')">In Stock</span>
+        </div>
+        <div class="product-price">
+            <th:block th:if="${p.isDiscounted()}">
+                <span class="price-now" th:text="'₹' + ${#numbers.formatDecimal(p.discountedPrice, 1, 2)}">₹40.00</span>
+                <span class="price-was" th:text="'₹' + ${#numbers.formatDecimal(p.price, 1, 2)}">₹50.00</span>
+            </th:block>
+            <th:block th:unless="${p.isDiscounted()}">
+                <span class="price-now" th:text="'₹' + ${#numbers.formatDecimal(p.price, 1, 2)}">₹40.00</span>
+            </th:block>
+            <span class="price-unit" th:text="' / ' + ${p.unit}">/ kg</span>
+        </div>
+        <form class="add-form" th:action="@{/cart/add}" method="post">
+            <input type="hidden" name="productId" th:value="${p.id}">
+            <input type="hidden" name="returnTo" th:value="${returnTo}">
+            <div class="stepper" th:if="${p.isInStock()}">
+                <button type="button" class="step-btn" onclick="stepQty(this, -1)">−</button>
+                <input class="qty" type="number" name="qty" value="1" min="1" th:max="${p.stock}">
+                <button type="button" class="step-btn" onclick="stepQty(this, 1)">+</button>
+            </div>
+            <button type="submit" class="btn btn-mart btn-block" th:disabled="${p.isOutOfStock()}"
+                    th:classappend="${p.isOutOfStock()} ? 'btn-disabled' : ''">Add to Cart</button>
+        </form>
+    </div>
+</article>
+
+<script th:fragment="martScripts">
+    function stepQty(btn, delta) {
+        var stepper = btn.closest('.stepper');
+        var input = stepper.querySelector('.qty');
+        var min = parseInt(input.min, 10) || 1;
+        var max = parseInt(input.max, 10) || 9999;
+        var v = parseInt(input.value, 10) || min;
+        v = Math.min(Math.max(v + delta, min), max);
+        input.value = v;
+    }
+    document.querySelectorAll('input[data-submit]').forEach(function (el) {
+        el.addEventListener('input', function () {
+            clearTimeout(el._timer);
+            el._timer = setTimeout(function () { el.form.submit(); }, 450);
+        });
+    });
+</script>
+
+</body>
+</html>

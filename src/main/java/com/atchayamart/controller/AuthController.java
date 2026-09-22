@@ -25,13 +25,15 @@ public class AuthController {
     }
 
     @GetMapping("/")
-    public String home() {
+    public String home(HttpSession session, Model model) {
+        addUserToModel(session, model);
         return "index";
     }
 
     @GetMapping("/login")
-    public String loginPage(Model model) {
+    public String loginPage(HttpSession session, Model model) {
         model.addAttribute("loginRequest", new LoginRequest());
+        addUserToModel(session, model);
         return "login";
     }
 
@@ -40,6 +42,7 @@ public class AuthController {
                         BindingResult bindingResult,
                         Model model,
                         HttpSession session) {
+        addUserToModel(session, model);
         if (bindingResult.hasErrors()) {
             return "login";
         }
@@ -54,9 +57,14 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerPage(Model model) {
+    public String registerPage(HttpSession session, Model model) {
         model.addAttribute("registerRequest", new RegisterRequest());
+        addUserToModel(session, model);
         return "register";
+    }
+
+    private void addUserToModel(HttpSession session, Model model) {
+        model.addAttribute("user", session.getAttribute(AuthInterceptor.SESSION_USER));
     }
 
     @PostMapping("/register")
@@ -73,13 +81,6 @@ public class AuthController {
             model.addAttribute("error", ex.getMessage());
             return "register";
         }
-    }
-
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute(AuthInterceptor.SESSION_USER);
-        model.addAttribute("user", user);
-        return "dashboard";
     }
 
     @GetMapping("/logout")

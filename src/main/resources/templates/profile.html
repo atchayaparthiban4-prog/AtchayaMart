@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('Profile')}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'profile')}"></header>
+
+<main class="container">
+    <div class="alert alert-success" th:if="${param.updated}">Profile updated successfully.</div>
+
+    <div class="section-head">
+        <h2>My Profile</h2>
+    </div>
+
+    <form class="card form-card narrow" th:action="@{/profile}" th:object="${profileRequest}" method="post">
+        <h3>Account Information</h3>
+
+        <label for="name">Name</label>
+        <input id="name" type="text" th:field="*{name}" required>
+
+        <label for="email">Email</label>
+        <input id="email" type="email" th:readonly="true" th:value="${user.email}">
+        <p class="muted">Email cannot be changed.</p>
+
+        <label for="mobile">Mobile <span class="muted">(optional)</span></label>
+        <input id="mobile" type="tel" th:field="*{mobile}" placeholder="10-digit mobile number">
+        <p class="field-error" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}"></p>
+
+        <label for="address">Address <span class="muted">(optional)</span></label>
+        <textarea id="address" th:field="*{address}" rows="3" placeholder="Delivery address"></textarea>
+
+        <button class="btn btn-mart btn-block" type="submit">Save Profile</button>
+    </form>
+</main>
+
+</body>
+</html>

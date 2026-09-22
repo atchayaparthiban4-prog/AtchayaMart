@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('My Orders')}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'orders')}"></header>
+
+<main class="container">
+    <div class="alert alert-error" th:if="${param.error == 'notfound'}">Order not found.</div>
+
+    <div class="section-head">
+        <h2>My Orders</h2>
+        <span class="muted">Track all your AtchayaMart orders here.</span>
+    </div>
+
+    <div class="empty-state" th:if="${orders.isEmpty()}">
+        <h3>No orders yet</h3>
+        <p>When you place an order it will appear here.</p>
+        <a class="btn btn-mart" th:href="@{/products}">Start Shopping</a>
+    </div>
+
+    <div class="orders-list" th:if="${!orders.isEmpty()}">
+        <a class="order-card card" th:each="o : ${orders}" th:href="@{/orders/{id}(id=${o.id})}">
+            <div class="order-top">
+                <span class="order-id" th:text="'Order #' + ${o.id}">Order #1</span>
+                <span class="status-pill" th:text="${o.status.label}">Pending</span>
+            </div>
+            <p class="muted" th:text="${#temporals.format(o.orderDate, 'dd MMM yyyy, hh:mm a')}">12 Jan 2026</p>
+            <p>
+                <span th:each="it : ${o.items}" th:remove="tag">
+                    <span th:if="${itStat.index < 3}" th:text="${it.productName} + (${itStat.last} ? '' : ', ')">Tomato</span>
+                </span>
+            </p>
+            <div class="order-foot">
+                <span class="order-count" th:text="${#lists.size(o.items)} + ' item(s)'">2 items</span>
+                <span class="price" th:text="'₹' + ${#numbers.formatDecimal(o.total, 1, 2)}">₹405.00</span>
+            </div>
+        </a>
+    </div>
+</main>
+
+</body>
+</html>

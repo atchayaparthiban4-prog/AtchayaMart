@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead(${product.name})}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'products')}"></header>
+
+<main class="container">
+    <p class="back-link"><a th:href="@{/products}">&larr; Back to products</a></p>
+
+    <div class="detail-card">
+        <div class="detail-thumb" th:if="${product.hasImage()}" th:style="'background-image: url(' + ${product.imageUrl} + ')'"></div>
+        <div class="detail-thumb placeholder" th:unless="${product.hasImage()}" th:text="${product.category.icon}">🍎</div>
+
+        <div class="detail-info">
+            <div class="product-top">
+                <span class="badge" th:text="${product.category.label}">Category</span>
+                <span class="discount-tag" th:if="${product.isDiscounted()}" th:text="${product.discountPercent} + '% OFF'">10% OFF</span>
+            </div>
+            <h1 th:text="${product.name}">Product</h1>
+
+            <div class="product-price">
+                <th:block th:if="${product.isDiscounted()}">
+                    <span class="price-now" th:text="'₹' + ${#numbers.formatDecimal(product.discountedPrice, 1, 2)}">₹40.00</span>
+                    <span class="price-was" th:text="'₹' + ${#numbers.formatDecimal(product.price, 1, 2)}">₹50.00</span>
+                </th:block>
+                <th:block th:unless="${product.isDiscounted()}">
+                    <span class="price-now" th:text="'₹' + ${#numbers.formatDecimal(product.price, 1, 2)}">₹40.00</span>
+                </th:block>
+                <span class="price-unit" th:text="' / ' + ${product.unit}">/ kg</span>
+            </div>
+
+            <div class="meta">
+                <span class="stock-text" th:text="'Available stock: ' + ${product.stock} + ' ' + ${product.unit}">Stock: 10 kg</span>
+                <span class="status-badge"
+                      th:classappend="${product.isOutOfStock()} ? 'out' : (${product.isLowStock()} ? 'low' : 'ok')"
+                      th:text="${product.isOutOfStock()} ? 'Out of Stock' : (${product.isLowStock()} ? 'Low Stock' : 'In Stock')">In Stock</span>
+            </div>
+
+            <p class="detail-desc" th:text="${product.description}">Description</p>
+
+            <form class="add-form" th:action="@{/cart/add}" method="post">
+                <input type="hidden" name="productId" th:value="${product.id}">
+                <input type="hidden" name="returnTo" th:value="${returnTo}">
+                <div class="stepper stepper-lg" th:if="${product.isInStock()}">
+                    <button type="button" class="step-btn" onclick="stepQty(this, -1)">−</button>
+                    <input class="qty" type="number" name="qty" value="1" min="1" th:max="${product.stock}">
+                    <button type="button" class="step-btn" onclick="stepQty(this, 1)">+</button>
+                </div>
+                <button type="submit" class="btn btn-mart btn-lg" th:disabled="${product.isOutOfStock()}"
+                        th:classappend="${product.isOutOfStock()} ? 'btn-disabled' : ''"
+                        th:text="${product.isOutOfStock()} ? 'Out of Stock' : 'Add to Cart'">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script th:replace="~{mart-fragments :: martScripts}"></script>
+</body>
+</html>

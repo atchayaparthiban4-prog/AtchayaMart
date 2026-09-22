@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{mart-fragments :: martHead('Manage Orders')}"></head>
+<body>
+
+<header th:replace="~{mart-fragments :: martNavbar(${user}, ${cartCount}, 'admin')}"></header>
+
+<main class="container">
+    <div class="section-head">
+        <h2>Manage Orders</h2>
+    </div>
+
+    <div class="empty-state" th:if="${orders.isEmpty()}">
+        <h3>No orders yet</h3>
+        <p>Customer orders will appear here once placed.</p>
+    </div>
+
+    <div class="orders-list" th:if="${!orders.isEmpty()}">
+        <div class="order-card card" th:each="o : ${orders}">
+            <div class="admin-order-top">
+                <div>
+                    <span class="order-id" th:text="'Order #' + ${o.id}">Order #1</span>
+                    <span class="muted" th:text="' | ' + ${o.customerName} + ' | ' + ${o.mobile}">Customer</span>
+                </div>
+                <div class="admin-order-actions">
+                    <form th:action="@{/admin/orders/{id}/status(id=${o.id})}" method="post">
+                        <select name="status" class="status-select">
+                            <option th:each="s : ${statuses}"
+                                    th:value="${s}" th:selected="${o.status == s}" th:text="${s.label}">Pending</option>
+                        </select>
+                        <button class="btn btn-mart btn-sm" type="submit">Update</button>
+                    </form>
+                </div>
+            </div>
+            <p class="muted" th:text="${#temporals.format(o.orderDate, 'dd MMM yyyy, hh:mm a')}">12 Jan 2026</p>
+            <table class="table summary compact">
+                <thead>
+                    <tr><th>Product</th><th>Qty</th><th>Amount</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="it : ${o.items}">
+                        <td th:text="${it.productName}">Tomato</td>
+                        <td th:text="${it.quantity}">2</td>
+                        <td th:text="'₹' + ${#numbers.formatDecimal(it.totalPrice, 1, 2)}">₹80.00</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="summary-row total">
+                <span th:text="'Deliver to: ' + ${o.address}">Address</span>
+                <span class="price" th:text="'₹' + ${#numbers.formatDecimal(o.total, 1, 2)}">₹405.00</span>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
