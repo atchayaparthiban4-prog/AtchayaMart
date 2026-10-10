@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: atchayamart
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:h2:mem:atchayamart;DB_CLOSE_DELAY=-1
+      - key: H2_CONSOLE_ENABLED
+        value: "false"
